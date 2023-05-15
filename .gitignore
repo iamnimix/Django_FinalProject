@@ -7,4 +7,5 @@ __pycache__/
 .vscode/
 .idea/
 venv/
-
+shop/core/migrations
+shop/productions/migrations

@@ -7,7 +7,6 @@ class Category(models.Model):
     slug = models.SlugField(max_length=255)
 
     class Meta:
-        ordering = ('name',)
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
 
@@ -20,7 +19,7 @@ class Product(models.Model):
     slug = models.SlugField(max_length=255)
     brand = models.CharField(max_length=255)
     specifications = models.CharField(max_length=255)
-    category_id = models.ForeignKey(Category, on_delete=models.SET_NULL)
+    category_id = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     price = models.IntegerField()
     available = models.BooleanField(default=True)
 

@@ -34,7 +34,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-    created = JalaliDateField()
+    created = JalaliDateField(auto_now=True)
     is_deleted = models.BooleanField('Is Deleted', default=False, null=False, blank=False)
 
 

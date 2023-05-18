@@ -3,7 +3,7 @@ from django.utils.text import slugify
 from productions.models import Category, Discount, Product, Image
 
 
-class CategoryModelTest(TestCase):
+class ModelsTest(TestCase):
     def setUp(self):
         category = Category.objects.create(category_name='sports')
         discount = Discount.objects.create(type='percent', amount=10)

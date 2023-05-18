@@ -9,7 +9,7 @@ class Address(models.Model):
     state = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     street = models.CharField(max_length=100)
-    user_id = models.ForeignKey(User, on_delete=models.SET_NULL)
+    user_id = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
 
 class Order(BaseModel):
@@ -31,7 +31,7 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField(default=1)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
 
     def get_cost(self):
         return self.quantity * self.price

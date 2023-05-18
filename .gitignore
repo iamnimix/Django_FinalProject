@@ -10,3 +10,4 @@ venv/
 shop/core/migrations
 shop/productions/migrations
 shop/orders/migrations
+shop/media

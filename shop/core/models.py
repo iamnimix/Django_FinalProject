@@ -1,6 +1,7 @@
-from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager, UserManager
 from django.db import models
+from django.utils import timezone
 from jdatetime import date as jdate, datetime as jdatetime
 
 
@@ -38,7 +39,7 @@ class BaseModel(models.Model):
 
 
 class MyUserManager(BaseUserManager):
-    def create_user(self, fullname, email, phone, password=None):
+    def create_user(self, fullname, email, phone, password, **extra_fields):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -50,54 +51,38 @@ class MyUserManager(BaseUserManager):
             email=self.normalize_email(email),
             phone=phone,
             fullname=fullname,
+            **extra_fields
         )
 
         user.set_password(password)
-        user.save(using=self._db)
+        user.save()
         return user
 
-    def create_superuser(self, fullname, email, phone, password=None):
+    def create_superuser(self, phone, password, fullname=None, email=None, **extra_fields):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
         """
-        user = self.create_user(
-            email=email,
-            password=password,
-            phone=phone,
-            fullname=fullname,
-        )
-        user.is_admin = True
-        user.is_superuser = True
-        user.save(using=self._db)
-        return user
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_active", True)
+        return self.create_user(fullname, email, phone, password, **extra_fields)
 
 
-class User(AbstractBaseUser):
-    fullname = models.CharField(max_length=100)
+class User(AbstractBaseUser, PermissionsMixin):
+    fullname = models.CharField(null=True, max_length=100)
     email = models.EmailField(
         verbose_name="email address",
         max_length=255,
     )
     phone = models.CharField(max_length=100, unique=True)
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-
-    objects = MyUserManager()
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = "phone"
-    REQUIRED_FIELDS = ['fullname', 'email']
+    REQUIRED_FIELDS = []
+    objects = MyUserManager()
 
-    def has_perm(self, perm, obj=None):
-        # Check if the user has a specific permission
-        return True
-
-    def has_module_perms(self, app_label):
-        # Check if the user has permissions to view the app
-        return True
-
-    @property
-    def is_staff(self):
-        # Check if the user is a staff member
-        return self.is_admin
+    def __str__(self):
+        return self.email

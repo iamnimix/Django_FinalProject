@@ -85,4 +85,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = MyUserManager()
 
     def __str__(self):
-        return self.email
+        return self.phone

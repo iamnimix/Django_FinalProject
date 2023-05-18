@@ -11,6 +11,9 @@ class Address(models.Model):
     street = models.CharField(max_length=100)
     user_id = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
 
+    def __str__(self):
+        return str(self.id)
+
 
 class Order(BaseModel):
     address_id = models.ForeignKey(Address, on_delete=models.CASCADE)

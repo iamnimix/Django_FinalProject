@@ -16,7 +16,7 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.category_name)
-        super().save(self, *args, **kwargs)
+        super().save()
 
     def __str__(self):
         return self.category_name
@@ -25,6 +25,9 @@ class Category(models.Model):
 class Discount(models.Model):
     type = models.CharField(max_length=255)
     amount = models.IntegerField()
+
+    def __str__(self):
+        return str(self.id)
 
 
 class Product(models.Model):
@@ -36,6 +39,7 @@ class Product(models.Model):
     price = models.IntegerField()
     available = models.BooleanField(default=True)
     discount = models.ForeignKey(Discount, null=True, blank=True, on_delete=models.SET_NULL)
+    main_image = models.ImageField(upload_to='productions/')
 
     class Meta:
         ordering = ('name',)
@@ -67,5 +71,5 @@ class Product(models.Model):
 
 class Image(models.Model):
     name = models.CharField(max_length=255)
-    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, related_name='image', on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='productions/')

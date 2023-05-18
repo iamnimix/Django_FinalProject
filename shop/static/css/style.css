@@ -40,6 +40,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  direction: rtl;
 }
 
 html {
@@ -60,7 +61,7 @@ body {
   font-weight: 400;
   line-height: 1.5;
   color: #6C757D;
-  text-align: left;
+  text-align: right;
   background-color: #F5F5F5;
 }
 

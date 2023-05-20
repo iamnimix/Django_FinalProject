@@ -9169,7 +9169,7 @@ button.bg-dark:focus {
 }
 
 .text-right {
-  text-align: right !important;
+  text-align: left !important;
 }
 
 .text-center {
@@ -9205,7 +9205,7 @@ button.bg-dark:focus {
     text-align: left !important;
   }
   .text-lg-right {
-    text-align: right !important;
+    text-align: left !important;
   }
   .text-lg-center {
     text-align: center !important;

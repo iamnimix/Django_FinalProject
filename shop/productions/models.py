@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.text import slugify
 
 
@@ -43,6 +44,9 @@ class Product(models.Model):
 
     class Meta:
         ordering = ('name',)
+
+    def get_absolute_url(self):
+        return reverse("productions:product_detail", args=[self.id, self.slug])
 
     def calculate_discount(self):
         if self.discount:

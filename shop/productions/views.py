@@ -1,6 +1,5 @@
-from django.core.paginator import Paginator
-from django.shortcuts import render
-from django.views.generic import ListView
+from django.shortcuts import render, get_object_or_404
+from django.views.generic import ListView, DetailView
 
 from .models import Product, Image, Category
 
@@ -18,14 +17,26 @@ class ProductList(ListView):
         category_slug = self.kwargs.get('category_slug')
 
         if category_slug:
-            # Filter products by category
-            category = Category.objects.get(slug=category_slug)
+            category = get_object_or_404(Category, slug=category_slug)
             queryset = queryset.filter(category=category)
 
         return queryset
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        for product in context['object_list']:
+            product.price = '{:20,.0f}'.format(product.price)
 
-def detail_page(request, id):
-    product = Product.objects.get(id=id)
-    images = Image.objects.filter(product_id=id)
-    return render(request, 'detail.html', context={'product': product, "images": images})
+        return context
+
+
+class ProductDetail(DetailView):
+    model = Product
+    template_name = 'detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product_id = self.kwargs.get('id')
+        context['images'] = Image.objects.filter(product_id=product_id)
+        context['product'].price = '{:20,.0f}'.format(context['product'].price)
+        return context

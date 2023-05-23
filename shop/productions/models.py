@@ -9,7 +9,8 @@ from django.utils.text import slugify
 class Category(models.Model):
     category_name = models.CharField('Category', max_length=255)
     slug = models.SlugField(max_length=255, editable=False)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='child_category')
+    photo = models.ImageField(null=True, blank=True, upload_to='productions/')
 
     class Meta:
         verbose_name = 'Category'
@@ -18,6 +19,9 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.category_name)
         super().save()
+
+    def get_absolute_url(self):
+        return reverse("productions:product_list_by_category", args=[self.slug])
 
     def __str__(self):
         return self.category_name

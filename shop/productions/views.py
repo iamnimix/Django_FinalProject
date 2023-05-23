@@ -1,10 +1,17 @@
 from django.shortcuts import render, get_object_or_404
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 
 from .models import Product, Image, Category
 
 
 # Create your views here.
+
+class CategoryList(ListView):
+    model = Category
+    template_name = 'category_list.html'
+    context_object_name = 'categories'
+    paginate_by = 4
+
 
 class ProductList(ListView):
     model = Product
@@ -26,6 +33,7 @@ class ProductList(ListView):
         context = super().get_context_data(**kwargs)
         for product in context['object_list']:
             product.price = '{:20,.0f}'.format(product.price)
+        context['categories'] = Category.objects.all()
 
         return context
 

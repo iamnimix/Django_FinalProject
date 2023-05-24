@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'productions',
     'orders',
     'core',
+    'customers',
 ]
 
 MIDDLEWARE = [
@@ -134,4 +135,4 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'core.User'
+AUTH_USER_MODEL = 'customers.User'

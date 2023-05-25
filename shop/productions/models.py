@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.translation import gettext as _
+from core.models import BaseModel
 
 
 # Create your models here.
@@ -40,7 +41,7 @@ class Discount(models.Model):
         return str(self.id)
 
 
-class Product(models.Model):
+class Product(BaseModel):
     name = models.CharField(verbose_name=_('نام'), max_length=255)
     slug = models.SlugField(max_length=255, editable=False)
     brand = models.CharField(verbose_name=_('برند'), max_length=255)

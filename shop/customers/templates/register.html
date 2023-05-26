@@ -25,8 +25,9 @@
                 <div class="contact-form bg-light p-30">
                     <div id="success"></div>
                     <form name="sentMessage" id="registration-form" novalidate="novalidate">
+                        {% csrf_token %}
                         <div class="control-group">
-                            <input type="text" name="fullname" class="form-control" id="name" placeholder="نام کامل"
+                            <input type="text" name="fullname" class="form-control" id="fullname" placeholder="نام کامل"
                                 required="required" data-validation-required-message="Please enter your name" />
                             <p class="help-block text-danger"></p>
                         </div>
@@ -41,7 +42,12 @@
                             <p class="help-block text-danger"></p>
                         </div>
                         <div class="control-group">
-                            <input type="password" name="password" class="form-control" id="password" placeholder="رمز عبور"
+                            <input type="password" name="password1" class="form-control" id="password1" placeholder="رمز عبور"
+                                required="required" data-validation-required-message="Please enter a subject" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="password" name="password2" class="form-control" id="password2" placeholder="تکرار رمز عبور"
                                 required="required" data-validation-required-message="Please enter a subject" />
                             <p class="help-block text-danger"></p>
                         </div>
@@ -76,6 +82,9 @@
                 // Handle the server response
                 alert("Registration successful!");
                 $('#res').text("کاربر با موفقیت ثبت شد!");
+              },
+              error: function(xhr, status, error) {
+                  $('#res').text("تکرار رمز عبور نادرست!!!");
               }
             });
           });
@@ -87,13 +96,3 @@
 
 
 {% endblock content %}
-
-
-<!--    <form id="registration-form">-->
-<!--        <label for="phone">phone: </label>-->
-<!--        <input type="text" id="phone" name="phone"><br>-->
-<!--        <label for="password">password: </label>-->
-<!--        <input type="password" id="password" name="password">-->
-<!--        <button type="submit">Register</button>-->
-<!--    </form>-->
-<!--    <div id="resultContainer"></div>-->

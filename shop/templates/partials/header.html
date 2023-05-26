@@ -13,8 +13,12 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">حساب کاربری</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">ورود</button>
-                            <button class="dropdown-item" type="button">ثبت نام</button>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'customers:login' %}"><button class="dropdown-item" type="button">خروج</button></a>
+                            {% else %}
+                                <a href="{% url 'customers:sign_up' %}"><button class="dropdown-item" type="button">ثبت نام</button></a>
+                                <a href="{% url 'customers:login' %}"><button class="dropdown-item" type="button">ورود</button></a>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -104,7 +108,7 @@
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active">صفحه اصلی</a>
+                            <a href="{% url 'productions:landing_page' %}" class="nav-item nav-link active">صفحه اصلی</a>
                             <a href="shop.html" class="nav-item nav-link">فروشگاه</a>
                             <a href="detail.html" class="nav-item nav-link">جزییات</a>
                             <div class="nav-item dropdown">

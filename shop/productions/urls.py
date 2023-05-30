@@ -4,6 +4,8 @@ app_name = 'productions'
 
 urlpatterns = [
     path('', views.LandingPage.as_view(), name='landing_page'),
+    path('check/', views.check),
+    path('ok/', views.MyProtectedView.as_view()),
     path('products/', views.ProductList.as_view(), name='product_list'),
     path('categories/', views.CategoryList.as_view(), name='category_list'),
     path("<slug:category_slug>/", views.ProductList.as_view(), name="product_list_by_category"),

@@ -95,5 +95,5 @@ class Image(models.Model):
         verbose_name_plural = _('عکس ها')
 
     def __str__(self):
-        return self
+        return self.name
 

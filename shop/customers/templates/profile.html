@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">Edogaru</span><span class="text-black-50">edogaru@mail.com.my</span><span> </span></div>
+        </div>
+        <div class="col-md-5 border-right">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right">ویرایش پروفایل</h4>
+                </div>
+                <form name="change-profile" id="profile-form">
+                    {% csrf_token %}
+                    <div class="row mt-2">
+                        <div class="col-md-6"><label class="labels">نام کامل</label><input type="text" class="form-control" name="fullname" placeholder="first name" value="{{user.fullname}}"></div>
+                        <div class="col-md-6"><label class="labels">شماره همراه</label><input type="text" class="form-control" name="phone" value="{{user.phone}}" placeholder="surname"></div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12"><label class="labels">ایمیل</label><input type="text" name="email" class="form-control" placeholder="enter phone number" value="{{user.email}}"></div>
+                    </div>
+                    <div class="row mt-3">
+                        <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">تایید</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+      $('#profile-form').submit(function(event) {
+        event.preventDefault();
+        var formData = $(this).serialize();
+
+        var token = getCookie('access_token');
+
+        $.ajaxSetup({
+            headers: {
+              'Authorization': 'Bearer ' + token
+            }
+        });
+        $.ajax({
+            type: 'PUT',
+            url: 'http://127.0.0.1:8000/accounts/profile/',
+            data: formData,
+            success: function(response) {
+                // Handle the success response
+                console.log(response);
+            },
+            error: function(xhr, textStatus, error) {
+                // Handle the error response
+                console.log(xhr.responseText);
+            }
+        });
+        window.location.href = 'http://127.0.0.1:8000';
+      });
+  });
+  function getCookie(name) {
+  var cookieName = name + "=";
+  var cookieArray = document.cookie.split(";");
+  for (var i = 0; i < cookieArray.length; i++) {
+    var cookie = cookieArray[i];
+    while (cookie.charAt(0) === " ") {
+      cookie = cookie.substring(1, cookie.length);
+    }
+    if (cookie.indexOf(cookieName) === 0) {
+      return cookie.substring(cookieName.length, cookie.length);
+    }
+  }
+  return null;
+}
+
+
+</script>
+
+
+{% endblock content %}

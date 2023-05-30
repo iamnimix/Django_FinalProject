@@ -1,8 +1,21 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import Product, Image, Category
+
+def check(request):
+    return render(request, 'check.html', context={})
+
+class MyProtectedView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        content = {'message': 'Hello, world!'}
+        return Response(content)
 
 
 # Create your views here.

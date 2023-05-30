@@ -13,8 +13,9 @@
                     <div class="btn-group">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">حساب کاربری</button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'customers:login' %}"><button class="dropdown-item" type="button">خروج</button></a>
+                            {% if request.COOKIES.access_token %}
+                                <a href="{% url 'customers:edit_profile' %}"><button class="dropdown-item" type="button">پروفایل</button></a>
+                                <a href="#" id="logout-button"><button class="dropdown-item" type="button">خروج</button></a>
                             {% else %}
                                 <a href="{% url 'customers:sign_up' %}"><button class="dropdown-item" type="button">ثبت نام</button></a>
                                 <a href="{% url 'customers:login' %}"><button class="dropdown-item" type="button">ورود</button></a>
@@ -135,4 +136,21 @@
             </div>
         </div>
     </div>
+
+<script>
+  $(document).ready(function() {
+    $('#logout-button').click(function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "customers:logout" %}',
+            success: function(response) {
+            alert("خروج موفقیت آمیز");
+            window.location.href = 'http://127.0.0.1:8000/'
+        },
+    });
+  });
+});
+
+</script>
     <!-- Navbar End -->

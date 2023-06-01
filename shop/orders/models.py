@@ -37,8 +37,35 @@ class Order(BaseModel):
         return sum(item.get_cost() for item in self.items.all())
 
 
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def add_item(self, product, quantity=1):
+        cart_item, created = OrderItem.objects.get_or_create(cart=self, product_id=product, price=product.price)
+        cart_item.quantity += quantity
+        cart_item.save()
+
+    def remove_item(self, product):
+        try:
+            cart_item = OrderItem.objects.get(cart=self, product=product.id)
+            cart_item.delete()
+        except OrderItem.DoesNotExist:
+            pass
+
+    def get_total_quantity(self):
+        return self.cartitem_set.aggregate(total_quantity=models.Sum('quantity'))['total_quantity'] or 0
+
+    def get_total_price(self):
+        return self.cartitem_set.annotate(total_price=models.F('quantity') * models.F('product__price')) \
+            .aggregate(total_price=models.Sum('total_price'))['total_price'] or 0
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name=_("مربوط به سفارش"))
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name=_("مربوط به سفارش"), null=True, blank=True)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("محصول"))
     price = models.PositiveIntegerField(_("قیمت"))
     quantity = models.PositiveIntegerField(_("تعداد"), default=1)

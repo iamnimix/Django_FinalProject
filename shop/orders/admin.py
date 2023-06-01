@@ -22,3 +22,8 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ("order", "product_id", "price", "quantity")
     list_filter = ("product_id", "order")
     search_fields = ("order__id", "prodcut_id__name")
+
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    list_display = ("user",)

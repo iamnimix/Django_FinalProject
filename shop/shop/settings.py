@@ -26,6 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CART_COOKIE_NAME = 'mycart'
 
 # Application definition
 

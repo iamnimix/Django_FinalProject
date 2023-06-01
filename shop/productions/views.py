@@ -6,19 +6,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Product, Image, Category
-
-def check(request):
-    return render(request, 'check.html', context={})
-
-class MyProtectedView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        content = {'message': 'Hello, world!'}
-        return Response(content)
+from orders.forms import CartAddProductForm
 
 
 # Create your views here.
+
 
 class LandingPage(View):
     def get(self, request):
@@ -65,6 +57,8 @@ class ProductDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product_id = self.kwargs.get('id')
+        cart_product_form = CartAddProductForm
         context['images'] = Image.objects.filter(product_id=product_id)
         context['product'].price = '{:20,.0f}'.format(context['product'].price)
+        context['form'] = cart_product_form
         return context

@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from productions.models import Product
 from customers.models import User
@@ -38,16 +40,16 @@ class Order(BaseModel):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    identifier = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
 
-    def add_item(self, product, quantity=1):
+    def add_item(self, product, quantity=0):
         cart_item, created = OrderItem.objects.get_or_create(cart=self, product_id=product, price=product.price)
         cart_item.quantity += quantity
         cart_item.save()
 
     def remove_item(self, product):
         try:
-            cart_item = OrderItem.objects.get(cart=self, product=product.id)
+            cart_item = OrderItem.objects.get(cart=self, product_id=product)
             cart_item.delete()
         except OrderItem.DoesNotExist:
             pass
@@ -68,7 +70,7 @@ class OrderItem(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("محصول"))
     price = models.PositiveIntegerField(_("قیمت"))
-    quantity = models.PositiveIntegerField(_("تعداد"), default=1)
+    quantity = models.PositiveIntegerField(_("تعداد"), default=0)
 
     def __str__(self):
         return str(self.id)

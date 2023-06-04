@@ -6,7 +6,7 @@ from productions.models import Product
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'price', 'main_image']
+        fields = ['id', 'name', 'price', 'main_image']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -21,7 +21,7 @@ class CartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Cart
-        fields = ['id', 'user', 'cartitem_set']
+        fields = ['id', 'identifier', 'cartitem_set']
 
     def get_cartitem_set(self, cart):
         cart_items = OrderItem.objects.filter(cart=cart)

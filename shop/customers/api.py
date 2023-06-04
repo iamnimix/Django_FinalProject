@@ -9,9 +9,13 @@ from .serializer import UserSerializer, UserProfileSerializer
 from .forms import CustomUserCreationForm
 from .models import User
 from django.conf import settings
+from orders.models import Cart
 
 
 class RegisterApi(APIView):
+
+    def get(self, request):
+        return render(request, 'register.html', {})
 
     def post(self, request):
         form = CustomUserCreationForm(request.POST)
@@ -40,8 +44,6 @@ class Profile(APIView):
         return user
 
     def put(self, request):
-        # query_params = QueryDict(request.META['QUERY_STRING'])
-        # user_id = query_params.get('userId')
         access_token = request.COOKIES.get('access_token')
         decoded_token = jwt.decode(access_token, settings.SECRET_KEY, algorithms=['HS256'])
         user_id = decoded_token.get('user_id')
@@ -55,5 +57,12 @@ class Profile(APIView):
 class Logout(APIView):
     def post(self, request):
         response = JsonResponse({'message': 'Logout successful.'})
+        identifier_ = request.COOKIES.get('cart_identifier')
+        try:
+            cart = Cart.objects.get(identifier=identifier_)
+            cart.delete()
+        except:
+            pass
         response.delete_cookie('access_token')
+        response.delete_cookie(settings.CART_COOKIE_NAME)
         return response

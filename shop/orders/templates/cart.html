@@ -55,37 +55,52 @@
     <!-- Cart End -->
 <script>
 $(document).ready(function() {
-  var token = getCookie('access_token');
-  $.ajaxSetup({
-      headers: {
-          'Authorization': 'Bearer ' + token
-      }
-  });
+  // var token = getCookie('access_token');
+  // $.ajaxSetup({
+  //     headers: {
+  //         'Authorization': 'Bearer ' + token
+  //     }
+  // });
   $.ajax({
     url: '{% url "orders:cart_api" %}',
     type: 'GET',
     dataType: 'json',
     success: function(data) {
-      console.log(data.cartitem_set)
+      // console.log(data.cartitem_set)
       var cartItems = data.cartitem_set;
       var tableBody = $('#cart-table tbody');
 
       $.each(cartItems, function(index, item) {
         var productName = item.product_id.name;
-        var productImage = item.product_id.main_image;
+        // var productImage = item.product_id.main_image;
         console.log((productName))
         var itemPrice = item.price;
         console.log((itemPrice))
         var itemQuantity = item.quantity;
         var itemTotal = itemPrice * itemQuantity;
 
-        var row = $('<tr>');
+        var row = $('<tr>').data('product-id', item.product_id.id);
         var productCell = $('<td>').addClass('align-middle').attr('id', 'product-name').html('<img src="" alt="" style="width: 50px;"> ' + productName);
         var priceCell = $('<td>').addClass('align-middle').attr('id', 'item-price').text(itemPrice);
         var quantityCell = $('<td>').addClass('align-middle').attr('id', 'item-quantity').text(itemQuantity);
         // var quantityCell = $('<td>').addClass('align-middle').html('<div class="input-group quantity mx-auto" style="width: 100px;"><form action="" method="POST">{% csrf_token %}' + item.update_quantity_form.quantity + item.update_quantity_form.override + '<input class="btn btn-primary" type="submit" value="به روزرسانی"></form></div>' + itemQuantity);
         var totalCell = $('<td>').addClass('align-middle').text(itemTotal);
-        var removeCell = $('<td>').addClass('align-middle').html('<button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>');
+        var removeCell = $('<td>').addClass('align-middle').html('<button class="btn btn-sm btn-danger" id="remove-item"><i class="fa fa-times"></i></button>');
+
+        $(document).on('click', '#remove-item', function() {
+            // var productId = item.product_id.id;
+            var productId = $(this).closest('tr').data('product-id');
+
+            $.ajax({
+                url: '/cart/remove/' + productId + '/',
+                type: 'POST',
+                success: function(data) {
+                    console.log('Item removed from cart');
+                    window.location.href = '{% url "orders:cart" %}'
+                },
+            });
+        });
+
 
         row.append(productCell, priceCell, quantityCell, totalCell, removeCell);
         tableBody.append(row);

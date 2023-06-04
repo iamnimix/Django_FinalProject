@@ -17,7 +17,7 @@
                                 <a href="{% url 'customers:edit_profile' %}"><button class="dropdown-item" type="button">پروفایل</button></a>
                                 <a href="#" id="logout-button"><button class="dropdown-item" type="button">خروج</button></a>
                             {% else %}
-                                <a href="{% url 'customers:sign_up' %}"><button class="dropdown-item" type="button">ثبت نام</button></a>
+                                <a href="{% url 'customers:register' %}"><button class="dropdown-item" type="button">ثبت نام</button></a>
                                 <a href="{% url 'customers:login' %}"><button class="dropdown-item" type="button">ورود</button></a>
                             {% endif %}
                         </div>

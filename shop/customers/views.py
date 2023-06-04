@@ -2,13 +2,8 @@ import jwt
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from django.views.generic import TemplateView
 from .models import User
 from django.conf import settings
-
-
-class RegisterView(TemplateView):
-    template_name = 'register.html'
 
 
 class Profile(View):

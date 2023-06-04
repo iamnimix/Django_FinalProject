@@ -229,14 +229,14 @@
     $(document).ready(function () {
         $('#add-cart').submit(function (event) {
             event.preventDefault();
-            var token = getCookie('access_token');
+            // var token = getCookie('access_token');
             var formData = $(this).serialize();
 
-            $.ajaxSetup({
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                }
-            });
+            // $.ajaxSetup({
+            //     headers: {
+            //         'Authorization': 'Bearer ' + token
+            //     }
+            // });
             $.ajax({
                 type: 'POST',
                 url: '{% url "orders:cart_add" product.id %}',

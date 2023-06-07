@@ -46,7 +46,7 @@
                             <h5>مجموع</h5>
                             <h5>$160</h5>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">نهایی کردن خرید</button>
+                        <a href="{% url 'orders:checkout' %}"><button class="btn btn-block btn-primary font-weight-bold my-3 py-3">نهایی کردن خرید</button></a>
                     </div>
                 </div>
             </div>
@@ -55,12 +55,6 @@
     <!-- Cart End -->
 <script>
 $(document).ready(function() {
-  // var token = getCookie('access_token');
-  // $.ajaxSetup({
-  //     headers: {
-  //         'Authorization': 'Bearer ' + token
-  //     }
-  // });
   $.ajax({
     url: '{% url "orders:cart_api" %}',
     type: 'GET',

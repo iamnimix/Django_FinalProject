@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, OrderItem
+from .models import Cart, OrderItem, Order
 from productions.models import Product
 
 
@@ -27,3 +27,9 @@ class CartSerializer(serializers.ModelSerializer):
         cart_items = OrderItem.objects.filter(cart=cart)
         serializer = OrderItemSerializer(cart_items, many=True)
         return serializer.data
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['address_id','user_id']

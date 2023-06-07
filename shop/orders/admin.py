@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import *
+
+
 # Register your models here.
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    raw_id_fields = ['product_id']
 
 
 @admin.register(Address)
@@ -15,6 +20,7 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ("address_id", "user_id", "paid")
     list_filter = ("user_id", "paid", "address_id")
     search_fields = ("address_id", "user_id")
+    inlines = [OrderItemInline]
 
 
 @admin.register(OrderItem)
@@ -27,3 +33,4 @@ class OrderItemAdmin(admin.ModelAdmin):
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
     list_display = ("identifier",)
+    inlines = [OrderItemInline]

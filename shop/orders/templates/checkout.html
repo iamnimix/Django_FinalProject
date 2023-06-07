@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Checkout Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">آدرس و مشخصات تحویل</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="row">
+                        <form id="address-form" method="POST">
+                            {% csrf_token %}
+                            <div class="col-md-6 form-group">
+                                {{form.as_p}}
+                                <input type="submit" value="تایید آدرس">
+                            </div>
+                        </form>
+                        <div class="col-md-12">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="shipto">
+                                <label class="custom-control-label" for="shipto"  data-toggle="collapse" data-target="#shipping-address">اضافه کردن آدرس جدید</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="collapse mb-5" id="shipping-address">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">آدرس جدید</span></h5>
+                    <div class="bg-light p-30">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>استان</label>
+                                <input class="form-control" type="text" placeholder="John">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>شهر</label>
+                                <input class="form-control" type="text" placeholder="Doe">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>خیابان</label>
+                                <input class="form-control" type="text" placeholder="example@email.com">
+                            </div>
+                            <button class="btn btn-block btn-primary font-weight-bold py-3">اضافه کردن</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <div class="mb-5">
+                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">روش پرداخت</span></h5>
+                    <div class="bg-light p-30">
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" name="payment" id="paypal">
+                                <label class="custom-control-label" for="paypal">Paypal</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" name="payment" id="directcheck">
+                                <label class="custom-control-label" for="directcheck">Direct Check</label>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <div class="custom-control custom-radio">
+                                <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
+                                <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
+                            </div>
+                        </div>
+                        <button id="paid" class="btn btn-block btn-primary font-weight-bold py-3">نهایی کردن سفارش</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout End -->
+
+<script>
+    $(document).ready(function () {
+
+        $('#address-form').submit(function (event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+            var token = getCookie('access_token');
+
+            $.ajaxSetup({
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            });
+            $.ajax({
+                url: '{% url "orders:final" %}',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    alert('آدرس انتخاب شد')
+                },
+            });
+        });
+        $("#paid").click(function() {
+            var token = getCookie('access_token');
+            console.log(token);
+            $.ajaxSetup({
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            });
+            $.ajax({
+                url: "{% url 'orders:paid' %}",
+                type: "POST",
+                success: function(data) {
+                    // window.location.href = "{% url 'orders:paid' %}";
+                },
+            });
+        });
+    });
+
+
+
+
+    function getCookie(name) {
+        var cookieName = name + "=";
+        var cookieArray = document.cookie.split(";");
+        for (var i = 0; i < cookieArray.length; i++) {
+          var cookie = cookieArray[i];
+          while (cookie.charAt(0) === " ") {
+            cookie = cookie.substring(1, cookie.length);
+          }
+          if (cookie.indexOf(cookieName) === 0) {
+            return cookie.substring(cookieName.length, cookie.length);
+          }
+        }
+        return null;
+    }
+</script>
+{% endblock content %}

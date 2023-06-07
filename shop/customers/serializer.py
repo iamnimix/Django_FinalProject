@@ -1,5 +1,23 @@
 from rest_framework import serializers
 from .models import User
+from orders.models import Address, Order
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    jalali_date = serializers.SerializerMethodField()
+
+    def get_jalali_date(self, obj):
+        return obj.get_jalali_date()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'created', 'jalali_date']
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['state', 'city', 'street']
 
 
 class UserSerializer(serializers.Serializer):

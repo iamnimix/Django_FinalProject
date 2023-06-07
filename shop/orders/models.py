@@ -20,7 +20,8 @@ class Address(models.Model):
         verbose_name_plural = _('آدرس ها')
 
     def __str__(self):
-        return str(self.user_id)
+        # return str(self.user_id)
+        return f"{self.city}-{self.street}"
 
 
 class Order(BaseModel):
@@ -67,7 +68,7 @@ class Cart(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name=_("مربوط به سفارش"), null=True, blank=True)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("محصول"))
     price = models.PositiveIntegerField(_("قیمت"))
     quantity = models.PositiveIntegerField(_("تعداد"), default=0)

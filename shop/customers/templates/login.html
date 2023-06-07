@@ -63,13 +63,22 @@
 
                   document.cookie = "access_token=" + access_token + "; path=/";
                   document.cookie = "refresh_token=" + refresh_token + "; path=/";
-                  alert("ورود موفقیت آمیز!");
                   $.ajaxSetup({
-                    headers: {
-                        Authorization: 'Bearer ' + response.access
-                    }
+                      headers: {
+                          Authorization: 'Bearer ' + response.access
+                      }
                   });
-                  window.location.href = 'http://127.0.0.1:8000/accounts/edit/profile/';
+                  $.ajax({
+                      type: 'POST',
+                      url: '{% url "customers:login" %}',
+                      data: formData,
+                      success: function (response) {
+                          console.log('ok');
+                          // alert("ورود موفقیت آمیز!");
+                          window.location.href = 'http://127.0.0.1:8000/accounts/edit/profile/';
+
+                      },
+                  });
               },
             });
           });

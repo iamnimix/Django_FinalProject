@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="#">حساب کاربری</a>
+                    <span class="breadcrumb-item active">ثبت نام</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <!-- Contact Start -->
+    <div class="container-fluid">
+        <h2 class="section-title position-relative text-uppercase mx-xl-5 mb-4"><span class="bg-secondary pr-3">فرم ثبت نام</span></h2>
+        <div class="row px-xl-5">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form bg-light p-30">
+                    <div id="success"></div>
+                    <form name="sentMessage" id="registration-form" novalidate="novalidate">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <input type="text" name="fullname" class="form-control" id="fullname" placeholder="نام کامل"
+                                required="required" data-validation-required-message="Please enter your name" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="text" name="phone" class="form-control" id="phone" placeholder="شماره همراه"
+                                required="required" data-validation-required-message="Please enter your email" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="email" name="email" class="form-control" id="email" placeholder="ایمیل"
+                                required="required" data-validation-required-message="Please enter a subject" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="password" name="password1" class="form-control" id="password1" placeholder="رمز عبور"
+                                required="required" data-validation-required-message="Please enter a subject" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="password" name="password2" class="form-control" id="password2" placeholder="تکرار رمز عبور"
+                                required="required" data-validation-required-message="Please enter a subject" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">ثبت</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5 mb-5">
+                <div class="bg-light p-30 mb-3">
+                    <p id="res" class="mb-2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+          $('#registration-form').submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Retrieve form data
+            var formData = $(this).serialize();
+
+
+            var fullname = $('#fullname').val();
+            var phone = $('#phone').val();
+            var email = $('#email').val();
+            var password1 = $('#password1').val();
+            var password2 = $('#password2').val();
+
+            if (fullname === '' || phone === '' || email === '' || password1 === '' || password2 === '') {
+              $('#res').text("لطفا تمام فیلد ها به درستی پر شود");
+              return;
+            }
+
+            if (password1 !== password2) {
+              $('#res').text("تکرار رمز عبور نادرست!!!");
+              return;
+            }
+
+            $.ajax({
+              type: 'POST',
+              url: '{% url "customers:register" %}',
+              data: formData,
+              success: function(response) {
+                  if (response.error) {
+                      console.log(response.error.email[0]);
+                      $('#res').text(response.error.email[0]);
+                  }
+                  else {
+                      alert("Registration successful!");
+                      $('#res').text("کاربر با موفقیت ثبت شد!");
+                      window.location.href = '{% url "customers:login" %}'
+                  }
+              },
+              error: function(xhr, status, error) {
+                  $('#res').text("تکرار رمز عبور نادرست!!!");
+              }
+            });
+          });
+        });
+    </script>
+    <!-- Contact End -->
+{% endblock content %}

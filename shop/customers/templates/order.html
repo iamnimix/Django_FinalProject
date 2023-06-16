@@ -1,0 +1,53 @@
+<p id="change">
+    <table id="cart-table" class="table table-light table-borderless table-hover text-center mb-0">
+        <thead class="thead-dark">
+            <tr>
+                <th>شماره سفارش</th>
+                <th>تاریخ</th>
+                <th>جزییات</th>
+            </tr>
+        </thead>
+
+        <tbody class="align-middle">
+
+        </tbody>
+    </table>
+</p>
+
+<script>
+$(document).ready(function() {
+  $.ajax({
+    url: '{% url "customers:order" %}',
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      var orders = data;
+      for (var i = 0; i < orders.length; i++) {
+        var order = orders[i];
+        var row = $('<tr>');
+        var button = $('<button>').text('مشاهده');
+        button.data('order-id', order.id);
+        button.click(function() {
+            var orderId = $(this).data('order-id');
+            var url = '{% url "customers:order_detail" 0 %}'.replace('0', orderId);
+
+            $.ajax({
+                url: '{% url "customers:order_detail_info" %}',
+                type: 'GET',
+                success: function (res) {
+                    $('#change').html(res.html);
+
+                    sessionStorage.setItem('orderId', orderId);
+                    sessionStorage.setItem('url', url);
+                },
+            });
+        });
+        row.append($('<td>').text(order.id));
+        row.append($('<td>').text(order.jalali_date));
+        row.append($('<td>').append(button));
+        $('#cart-table tbody').append(row);
+      }
+    },
+  });
+});
+</script>

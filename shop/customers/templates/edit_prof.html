@@ -1,0 +1,49 @@
+<div class="p-3 py-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="text-right">ویرایش پروفایل</h4>
+  </div>
+  <form name="change-profile" id="profile-form">
+    {% csrf_token %}
+    <div class="row mt-2">
+      <div class="col-md-6"><label class="labels">نام کامل</label><input type="text" class="form-control" name="fullname" placeholder="first name" value="{{user.fullname}}"></div>
+      <div class="col-md-6"><label class="labels">شماره همراه</label><input type="text" class="form-control" name="phone" value="{{user.phone}}" placeholder="surname"></div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-md-12"><label class="labels">ایمیل</label><input type="text" name="email" class="form-control" placeholder="enter phone number" value="{{user.email}}"></div>
+    </div>
+    <div class="row mt-3">
+      <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">تایید</button>
+    </div>
+  </form>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    $('#profile-form').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+
+            var token = getCookie('access_token');
+
+            $.ajaxSetup({
+                headers: {
+                  'Authorization': 'Bearer ' + token
+                }
+            });
+            $.ajax({
+                type: 'PUT',
+                url: 'http://127.0.0.1:8000/accounts/profile/',
+                data: formData,
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, textStatus, error) {
+                    // Handle the error response
+                    console.log(xhr.responseText);
+                }
+            });
+            window.location.href = 'http://127.0.0.1:8000/accounts/edit/profile/';
+    });
+  });
+</script>

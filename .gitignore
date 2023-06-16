@@ -6,3 +6,8 @@ __pycache__/
 .env
 .vscode/
 .idea/
+venv/
+shop/core/migrations
+shop/productions/migrations
+shop/orders/migrations
+shop/media

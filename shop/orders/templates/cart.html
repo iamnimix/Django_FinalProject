@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <!-- Cart Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-lg-8 table-responsive mb-5">
+                <table id="cart-table" class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>نام محصول</th>
+                            <th>قیمت</th>
+                            <th>تعداد</th>
+                            <th>مجموع</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-4">
+                <form class="mb-30" action="">
+                    <div class="input-group">
+                        <input type="text" class="form-control border-0 p-4" placeholder="کد تخفیف">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary">تایید کد</button>
+                        </div>
+                    </div>
+                </form>
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">سبد خرید</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>جمع محصولات</h6>
+                            <h6 class="total-sum">$150</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">هزینه ارسال</h6>
+                            <h6 id="send" class="font-weight-medium">$10</h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>مجموع</h5>
+                            <h5 id="final"></h5>
+                        </div>
+                        <a href="{% url 'orders:checkout' %}"><button class="btn btn-block btn-primary font-weight-bold my-3 py-3">نهایی کردن خرید</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Cart End -->
+<script>
+$(document).ready(function() {
+  $.ajax({
+    url: '{% url "orders:cart_api" %}',
+    type: 'GET',
+    dataType: 'json',
+    success: function(data) {
+      // console.log(data.cartitem_set)
+      var cartItems = data.cartitem_set;
+      var tableBody = $('#cart-table tbody');
+      var totalSum = 0;
+
+      $.each(cartItems, function(index, item) {
+        var productName = item.product_id.name;
+        // var productImage = item.product_id.main_image;
+        console.log((productName))
+        var itemPrice = item.price;
+        console.log((itemPrice))
+        var itemQuantity = item.quantity;
+        var itemTotal = itemPrice * itemQuantity;
+
+        var row = $('<tr>').data('product-id', item.product_id.id);
+        var productCell = $('<td>').addClass('align-middle').attr('id', 'product-name').html('<img src="" alt="" style="width: 50px;"> ' + productName);
+        var priceCell = $('<td>').addClass('align-middle').attr('id', 'item-price').text(itemPrice);
+        var quantityCell = $('<td>').addClass('align-middle').attr('id', 'item-quantity').text(itemQuantity);
+        // var quantityCell = $('<td>').addClass('align-middle').html('<div class="input-group quantity mx-auto" style="width: 100px;"><form action="" method="POST">{% csrf_token %}' + item.update_quantity_form.quantity + item.update_quantity_form.override + '<input class="btn btn-primary" type="submit" value="به روزرسانی"></form></div>' + itemQuantity);
+        var totalCell = $('<td>').addClass('align-middle').text(itemTotal);
+        var removeCell = $('<td>').addClass('align-middle').html('<button class="btn btn-sm btn-danger" id="remove-item"><i class="fa fa-times"></i></button>');
+
+        $(document).on('click', '#remove-item', function() {
+            // var productId = item.product_id.id;
+            var productId = $(this).closest('tr').data('product-id');
+
+            $.ajax({
+                url: '/cart/remove/' + productId + '/',
+                type: 'POST',
+                success: function(data) {
+                    console.log('Item removed from cart');
+                    window.location.href = '{% url "orders:cart" %}'
+                },
+            });
+        });
+        totalSum += itemTotal;
+
+
+        row.append(productCell, priceCell, quantityCell, totalCell, removeCell);
+        tableBody.append(row);
+      });
+      $('.total-sum').text('تومان' + totalSum);
+      var send = 25000;
+      var final = send + totalSum;
+      $('#send').text('تومان' + send);
+      $('#final').text('تومان' + final);
+
+
+    },
+  });
+});
+  function getCookie(name) {
+  var cookieName = name + "=";
+  var cookieArray = document.cookie.split(";");
+  for (var i = 0; i < cookieArray.length; i++) {
+    var cookie = cookieArray[i];
+    while (cookie.charAt(0) === " ") {
+      cookie = cookie.substring(1, cookie.length);
+    }
+    if (cookie.indexOf(cookieName) === 0) {
+      return cookie.substring(cookieName.length, cookie.length);
+    }
+  }
+  return null;
+}
+</script>
+
+{% endblock content %}

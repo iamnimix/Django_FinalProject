@@ -19,7 +19,7 @@ class Category(models.Model):
         verbose_name_plural = _('دسته بندی ها')
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.category_name)
+        self.slug = slugify(self.category_name, allow_unicode=True)
         super().save()
 
     def get_absolute_url(self):
@@ -62,17 +62,18 @@ class Product(BaseModel):
 
     def calculate_discount(self):
         if self.discount:
-            discount_percent = self.discount.amount
-            discount_amount = (self.price * discount_percent) / 100
+            if self.discount.type == 'percent':
+                discount_percent = self.discount.amount
+                discount_amount = (self.price * discount_percent) / 100
 
-            return discount_amount
+                return discount_amount
 
     def calculate_discounted_price(self):
         discounted_price = self.price - self.calculate_discount()
         self.price = discounted_price
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name, allow_unicode=True)
         if self.discount and self.discount.id is None:
             self.discount.save()
         else:

@@ -1,0 +1,97 @@
+<div class="container-fluid">
+
+        <div class="row px-xl-5">
+            <div class="col-lg-7 mb-5">
+                <div class="contact-form bg-light p-30">
+                    <div id="success"></div>
+                    <form method="post" name="sentMessage" id="login-form" novalidate="novalidate">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <input type="text" name="phone" class="form-control" id="phone" placeholder="شماره همراه"
+                                required="required" data-validation-required-message="Please enter your email" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div class="control-group">
+                            <input type="password" name="password" class="form-control" id="password" placeholder="رمز عبور"
+                                required="required" data-validation-required-message="Please enter a subject" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">دریافت کد </button>
+                        </div>
+                    </form>
+                    <form method="post" name="otp-code" id="otp">
+                        {% csrf_token %}
+                        <div class="control-group">
+                            <input type="text" name="code" class="form-control" id="code" placeholder="کد دریافت شده"
+                                required="required" data-validation-required-message="Please enter your email" />
+                            <p class="help-block text-danger"></p>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary py-2 px-4" type="submit" id="sendOtp">ورود</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+    <script>
+        $(document).ready(function() {
+          $('#login-form').submit(function(event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();
+
+            $.ajax({
+              type: 'POST',
+              url: '{% url "customers:login_otp" %}',
+              data: formData,
+              success: function (response) {
+                  console.log('one!!')
+                  $('#otp').submit(function (event) {
+                      event.preventDefault();
+                      var otpData = $(this).serialize();
+                      $.ajax({
+                          type: 'POST',
+                          url: '{% url "customers:verification" %}',
+                          data: otpData,
+                          success: function (res) {
+                              console.log('two!!')
+                              if (res.status == 'success') {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'http://127.0.0.1:8000/api/token/',
+                                    data: formData,
+                                    success: function(response) {
+                                        console.log('three!!')
+                                        var access_token = response.access;
+                                        var refresh_token = response.refresh;
+                                        document.cookie = "access_token=" + access_token + "; path=/";
+                                        document.cookie = "refresh_token=" + refresh_token + "; path=/";
+                                        $.ajaxSetup({
+                                            headers: {
+                                                Authorization: 'Bearer ' + response.access
+                                            }
+                                        });
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '{% url "customers:login" %}',
+                                            data: formData,
+                                            success: function (response) {
+                                                console.log('four!!');
+                                                // alert("ورود موفقیت آمیز!");
+                                                window.location.href = 'http://127.0.0.1:8000/accounts/edit/profile/';
+                                            },
+                                        });
+                                    },
+                                });
+                              }
+                          },
+                      });
+                  });
+              },
+            });
+          });
+        });
+    </script>

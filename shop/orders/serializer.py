@@ -11,6 +11,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_id = ProductSerializer()
+
     class Meta:
         model = OrderItem
         fields = ['id', 'product_id', 'quantity', 'price']
@@ -29,7 +30,14 @@ class CartSerializer(serializers.ModelSerializer):
         return serializer.data
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderDetailSerializer(serializers.ModelSerializer):
+    orderitem_set = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
-        fields = ['address_id','user_id']
+        fields = ['address_id', 'user_id', 'orderitem_set']
+
+    def get_orderitem_set(self, order):
+        order_items = OrderItem.objects.filter(order=order)
+        serializer = OrderItemSerializer(order_items, many=True)
+        return serializer.data

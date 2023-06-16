@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'django_jalali',
+    'drf_spectacular',
 ]
 
 JALALI_DATE_DEFAULTS = {
@@ -108,8 +109,12 @@ WSGI_APPLICATION = 'shop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'shopdb',
+        'USER': 'iamnimix',
+        'PASSWORD': 'iamnimix22',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -165,6 +170,13 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Shop',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '1.0.0',
 }
 
 SIMPLE_JWT = {
@@ -175,3 +187,7 @@ SIMPLE_JWT = {
 }
 CART_SESSION_ID = 'cart'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+# Celery settings
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"

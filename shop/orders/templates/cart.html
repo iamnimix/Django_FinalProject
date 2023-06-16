@@ -34,17 +34,17 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>جمع محصولات</h6>
-                            <h6>$150</h6>
+                            <h6 class="total-sum">$150</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">هزینه ارسال</h6>
-                            <h6 class="font-weight-medium">$10</h6>
+                            <h6 id="send" class="font-weight-medium">$10</h6>
                         </div>
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>مجموع</h5>
-                            <h5>$160</h5>
+                            <h5 id="final"></h5>
                         </div>
                         <a href="{% url 'orders:checkout' %}"><button class="btn btn-block btn-primary font-weight-bold my-3 py-3">نهایی کردن خرید</button></a>
                     </div>
@@ -63,6 +63,7 @@ $(document).ready(function() {
       // console.log(data.cartitem_set)
       var cartItems = data.cartitem_set;
       var tableBody = $('#cart-table tbody');
+      var totalSum = 0;
 
       $.each(cartItems, function(index, item) {
         var productName = item.product_id.name;
@@ -94,11 +95,19 @@ $(document).ready(function() {
                 },
             });
         });
+        totalSum += itemTotal;
 
 
         row.append(productCell, priceCell, quantityCell, totalCell, removeCell);
         tableBody.append(row);
       });
+      $('.total-sum').text('تومان' + totalSum);
+      var send = 25000;
+      var final = send + totalSum;
+      $('#send').text('تومان' + send);
+      $('#final').text('تومان' + final);
+
+
     },
   });
 });

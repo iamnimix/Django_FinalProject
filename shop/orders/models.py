@@ -67,7 +67,7 @@ class Cart(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name=_("مربوط به سفارش"), null=True, blank=True)
+    order = models.ForeignKey(Order, related_name='order_items', on_delete=models.CASCADE, verbose_name=_("مربوط به سفارش"), null=True, blank=True)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
     product_id = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name=_("محصول"))
     price = models.PositiveIntegerField(_("قیمت"))

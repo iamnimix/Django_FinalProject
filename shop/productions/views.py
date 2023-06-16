@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import ListView, DetailView, TemplateView
@@ -14,8 +15,9 @@ from orders.forms import CartAddProductForm
 
 class LandingPage(View):
     def get(self, request):
-        last_5_products = Product.objects.order_by('-id')[:5]
-        return render(request, "landing_page.html", {'products': last_5_products})
+        last_5_products = Product.objects.order_by('-id')[:4]
+        categories = Category.objects.all()
+        return render(request, "landing_page.html", {'products': last_5_products, 'categories': categories})
 
 
 class CategoryList(ListView):
@@ -33,6 +35,7 @@ class ProductList(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        # queryset = queryset.filter(available=True)
         category_slug = self.kwargs.get('category_slug')
 
         if category_slug:
@@ -61,4 +64,18 @@ class ProductDetail(DetailView):
         context['images'] = Image.objects.filter(product_id=product_id)
         context['product'].price = '{:20,.0f}'.format(context['product'].price)
         context['form'] = cart_product_form
+        context['categories'] = Category.objects.all()
         return context
+
+
+class SearchResultsView(ListView):
+    model = Product
+    template_name = 'list.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):  # new
+        query = self.request.GET.get("q")
+        object_list = Product.objects.filter(
+            Q(name__icontains=query)
+        )
+        return object_list

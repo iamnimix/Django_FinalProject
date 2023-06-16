@@ -1,16 +1,20 @@
 import jwt
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, QueryDict, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 from .serializer import UserSerializer, UserProfileSerializer, AddressSerializer, OrderSerializer
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, AddressForm
 from .models import User
 from django.conf import settings
 from orders.models import Cart, Address, Order
+from orders.serializer import OrderDetailSerializer
+from .tasks import send_otp_sms
+import redis
 
 
 class RegisterApi(APIView):
@@ -19,17 +23,10 @@ class RegisterApi(APIView):
         return render(request, 'register.html', {})
 
     def post(self, request):
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
-            if form.cleaned_data['password1'] == form.cleaned_data['password2']:
-                serializer = UserSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
-                return Response(serializer.data)
-
-        else:
-            errors = form.errors
-            return Response(errors)
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class LoginAPIView(APIView):
@@ -42,6 +39,43 @@ class LoginAPIView(APIView):
         return Response()
 
 
+class LoginOtp(APIView):
+    def get(self, request):
+        html = render(request, 'login_otp.html')
+        return Response({'html': html.content})
+
+    def post(self, request):
+        try:
+            user = User.objects.get(phone=request.POST['phone'])
+            response = Response()
+            response.set_cookie('user_phone', user.phone)
+            send_otp_sms.delay(user.phone)
+            return response
+        except User.DoesNotExist:
+            pass
+
+
+class Verification(APIView):
+    def get(self, request):
+        return render(request, 'verification.html')
+
+    def post(self, request):
+        otp = int(request.POST['code'])
+        print(otp)
+        r = redis.Redis(host='localhost', port=6379, db=0)
+        code = int(r.get(request.COOKIES.get('user_phone')))
+        print(type(code))
+        if code == otp:
+            return Response({
+                'status': 'success'
+            }, status=status.HTTP_200_OK)
+        else:
+            print('else')
+            return Response({
+                'status': 'error'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 class Logout(APIView):
     def post(self, request):
         response = JsonResponse({'message': 'Logout successful.'})
@@ -51,6 +85,7 @@ class Logout(APIView):
             cart.delete()
         except:
             pass
+        logout(request)
         response.delete_cookie('access_token')
         response.delete_cookie(settings.CART_COOKIE_NAME)
         return response
@@ -68,7 +103,9 @@ class Profile(APIView):
                 user = User.objects.get(pk=user_id)
                 serializer = UserSerializer(user)
             except jwt.ExpiredSignatureError:
-                return Response({'error': 'Access token has expired'}, status=401)
+                response = Response({'error': 'Access token has expired'}, status=401)
+                response.delete_cookie('access_token')
+                return response
             except (jwt.DecodeError, jwt.InvalidTokenError):
                 return Response({'error': 'Invalid access token'}, status=401)
             return Response(serializer.data)
@@ -98,6 +135,18 @@ class AddressApi(APIView):
         serializer = AddressSerializer(addresses, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            serializer = AddressSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.validated_data['user_id'] = request.user
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            errors = form.errors
+            return Response(errors)
+
 
 class OrderAPI(APIView):
     permission_classes = [IsAuthenticated]
@@ -106,3 +155,10 @@ class OrderAPI(APIView):
         orders = Order.objects.filter(user_id=request.user)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
+
+
+class OrderDetail(APIView):
+    def get(self, request, pk):
+        order = Order.objects.get(pk=pk)
+        serialize = OrderDetailSerializer(order)
+        return Response(serialize.data)

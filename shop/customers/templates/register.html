@@ -73,15 +73,37 @@
             // Retrieve form data
             var formData = $(this).serialize();
 
-            // Send form data to the server
+
+            var fullname = $('#fullname').val();
+            var phone = $('#phone').val();
+            var email = $('#email').val();
+            var password1 = $('#password1').val();
+            var password2 = $('#password2').val();
+
+            if (fullname === '' || phone === '' || email === '' || password1 === '' || password2 === '') {
+              $('#res').text("لطفا تمام فیلد ها به درستی پر شود");
+              return;
+            }
+
+            if (password1 !== password2) {
+              $('#res').text("تکرار رمز عبور نادرست!!!");
+              return;
+            }
+
             $.ajax({
-              type: 'POST', // Use the appropriate HTTP method
-              url: '{% url "customers:register" %}', // Replace with your server-side script URL
+              type: 'POST',
+              url: '{% url "customers:register" %}',
               data: formData,
               success: function(response) {
-                // Handle the server response
-                alert("Registration successful!");
-                $('#res').text("کاربر با موفقیت ثبت شد!");
+                  if (response.error) {
+                      console.log(response.error.email[0]);
+                      $('#res').text(response.error.email[0]);
+                  }
+                  else {
+                      alert("Registration successful!");
+                      $('#res').text("کاربر با موفقیت ثبت شد!");
+                      window.location.href = '{% url "customers:login" %}'
+                  }
               },
               error: function(xhr, status, error) {
                   $('#res').text("تکرار رمز عبور نادرست!!!");
@@ -91,8 +113,4 @@
         });
     </script>
     <!-- Contact End -->
-
-
-
-
 {% endblock content %}

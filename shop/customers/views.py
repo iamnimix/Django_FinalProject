@@ -1,6 +1,7 @@
 import jwt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.views import View
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,9 +17,15 @@ class LoginSimple(APIView):
 
 
 def show_profile(request):
-    if request.user.is_authenticated:
-        return render(request, 'profile.html', context={})
-    else:
+    try:
+        token = request.COOKIES.get('access_token')
+        decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        current_time = timezone.now().timestamp()
+        if request.user.is_authenticated and current_time < decoded_token['exp']:
+            return render(request, 'profile.html', context={})
+        else:
+            return HttpResponse('ابتدا وارد شوید')
+    except Exception:
         return HttpResponse('ابتدا وارد شوید')
 
 

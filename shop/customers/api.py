@@ -2,31 +2,26 @@ import jwt
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, QueryDict, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import UserSerializer, UserProfileSerializer, AddressSerializer, OrderSerializer
-from .forms import CustomUserCreationForm, AddressForm
 from .models import User
 from django.conf import settings
 from orders.models import Cart, Address, Order
 from orders.serializer import OrderDetailSerializer
 from .tasks import send_otp_sms
 import redis
+from rest_framework import generics
 
 
-class RegisterApi(APIView):
+class RegisterApi(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
     def get(self, request):
         return render(request, 'register.html', {})
-
-    def post(self, request):
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
 
 
 class LoginAPIView(APIView):
@@ -136,16 +131,11 @@ class AddressApi(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        form = AddressForm(request.POST)
-        if form.is_valid():
-            serializer = AddressSerializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.validated_data['user_id'] = request.user
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            errors = form.errors
-            return Response(errors)
+        serializer = AddressSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data['user_id'] = request.user
+        serializer.save()
+        return Response(serializer.data)
 
 
 class OrderAPI(APIView):
@@ -157,8 +147,7 @@ class OrderAPI(APIView):
         return Response(serializer.data)
 
 
-class OrderDetail(APIView):
-    def get(self, request, pk):
-        order = Order.objects.get(pk=pk)
-        serialize = OrderDetailSerializer(order)
-        return Response(serialize.data)
+class OrderDetail(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderDetailSerializer
+    permission_classes = [IsAuthenticated]

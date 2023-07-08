@@ -27,6 +27,11 @@ class CategoryList(ListView):
     paginate_by = 4
 
 
+# def product_list(request):
+#     products = Product.objects.select_related('category').get(id=5)
+#     return render(request, 'list.html', {"request": request, "products": products})
+
+
 class ProductList(ListView):
     model = Product
     template_name = 'list.html'

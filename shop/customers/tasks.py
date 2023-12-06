@@ -2,7 +2,7 @@ from celery import shared_task
 import redis
 from random import randint
 
-redis_instance = redis.StrictRedis(host='localhost', port=6379, db=0)
+redis_instance = redis.StrictRedis(host='redis', port=6379, db=0)
 
 
 @shared_task

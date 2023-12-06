@@ -33,7 +33,7 @@
                     if (response.status == 'success') {
                         $.ajax({
                             type: 'POST',
-                            url: 'http://127.0.0.1:8000/api/token/',
+                            url: '{% url "token_obtain_pair" %}',
                             data: formData,
                             success: function(response) {
                                 var access_token = response.access;
@@ -52,7 +52,7 @@
                                     success: function (response) {
                                         console.log('ok');
                                         // alert("ورود موفقیت آمیز!");
-                                        window.location.href = 'http://127.0.0.1:8000/accounts/edit/profile/';
+                                        window.location.href = '{% url "customers:edit_profile" %}';
                                     },
                                 });
                             },

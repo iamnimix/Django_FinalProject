@@ -4,7 +4,7 @@ from django.db import models
 from productions.models import Product
 from customers.models import User
 from core.models import BaseModel
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 

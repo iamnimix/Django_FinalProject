@@ -17,7 +17,7 @@ class LandingPage(View):
     def get(self, request):
         last_5_products = Product.objects.order_by('-id')[:4]
         categories = Category.objects.all()
-        return render(request, "landing_page.html", {'products': last_5_products, 'categories': categories})
+        return render(request, "landing_page.html", {'products': last_5_products})
 
 
 class CategoryList(ListView):
@@ -53,7 +53,7 @@ class ProductList(ListView):
         context = super().get_context_data(**kwargs)
         for product in context['object_list']:
             product.price = '{:20,.0f}'.format(product.price)
-        context['categories'] = Category.objects.all()
+        # context['categories'] = Category.objects.all()
 
         return context
 
@@ -69,7 +69,7 @@ class ProductDetail(DetailView):
         context['images'] = Image.objects.filter(product_id=product_id)
         context['product'].price = '{:20,.0f}'.format(context['product'].price)
         context['form'] = cart_product_form
-        context['categories'] = Category.objects.all()
+        # context['categories'] = Category.objects.all()
         return context
 
 

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1ltnfp2drx795@dkaqimys0n)damvqa!%9!jbq-%rp+n*d&hh4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 CART_COOKIE_NAME = 'mycart'
 
@@ -97,6 +97,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'productions.context_proccessor.categories',
             ],
         },
     },
@@ -111,9 +112,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'shopdb',
-        'USER': 'iamnimix',
+        'USER': 'nima',
         'PASSWORD': 'iamnimix22',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgres',
         'PORT': '5432',
     }
 }
@@ -154,11 +155,13 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, '/media')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    os.path.join(BASE_DIR, '/backend/static')
 ]
+
+# STATIC_ROOT = os.path.join(BASE_DIR, '/backend/static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -189,5 +192,5 @@ CART_SESSION_ID = 'cart'
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"

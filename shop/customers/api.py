@@ -57,7 +57,7 @@ class Verification(APIView):
     def post(self, request):
         otp = int(request.POST['code'])
         print(otp)
-        r = redis.Redis(host='localhost', port=6379, db=0)
+        r = redis.Redis(host='redis', port=6379, db=0)
         code = int(r.get(request.COOKIES.get('user_phone')))
         print(type(code))
         if code == otp:
